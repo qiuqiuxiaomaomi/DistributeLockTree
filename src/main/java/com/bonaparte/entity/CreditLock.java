@@ -9,7 +9,6 @@ public class CreditLock {
      * 自增索引id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
