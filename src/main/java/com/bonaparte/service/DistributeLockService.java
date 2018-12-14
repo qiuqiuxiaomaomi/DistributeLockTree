@@ -19,54 +19,39 @@ public class DistributeLockService {
 
     // 锁的同步执行
     public void syncReentrantLock(){
-        System.out.println("111111111111");
         RLock rLock = redissonClient.getLock("redissonlock");
         try{
-            System.out.println("222222222222");
             boolean res = rLock.tryLock(3, 10, TimeUnit.SECONDS);
             if (res == true){
-                System.out.println("333333333333");
+                System.out.println("获取锁成功");
             }
-            System.out.println("55555555555");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
-            System.out.println("666666666666");
             rLock.unlock();
         }
-        System.out.println("7777777777777");
     }
 
     //锁的异步执行
     public void asyncReentrantLock(){
         RLock rLock = redissonClient.getLock("redissonlock");
         try{
-            System.out.println("111111111");
-            rLock.lockAsync();
-            System.out.println("2222222222");
-            rLock.lockAsync(10, TimeUnit.SECONDS);
-            System.out.println("3333333333");
             Future<Boolean> future = rLock.tryLockAsync(3, 10, TimeUnit.SECONDS);
-            System.out.println("5555555555");
             if (future.get()) {
-                System.out.println("6666666666");
+                System.out.println("加锁成功");
             }
-            System.out.println("777777777");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }finally {
-            System.out.println("888888888");
             rLock.unlock();
         }
-        System.out.println("99999999");
     }
 
     public void fairLock(){
         RLock rLock = redissonClient.getFairLock("redissonlock");
         try{
-            rLock.lock();
             rLock.lock(10, TimeUnit.SECONDS);
             boolean res = rLock.tryLock(100, 10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -78,7 +63,6 @@ public class DistributeLockService {
 
     public void fairAsyn(){
         RLock rLock = redissonClient.getFairLock("redissonlock");
-        rLock.lockAsync();
         rLock.lockAsync(10, TimeUnit.SECONDS);
         Future<Boolean> future = rLock.tryLockAsync(100, 10, TimeUnit.SECONDS);
     }
@@ -89,7 +73,6 @@ public class DistributeLockService {
         RLock rLock3 = redissonClient.getLock("lock3");
         RedissonMultiLock redissonMultiLock = new RedissonMultiLock(rLock1, rLock2, rLock3);
         try{
-            redissonMultiLock.lock();
             boolean res = redissonMultiLock.tryLock(100, 10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
