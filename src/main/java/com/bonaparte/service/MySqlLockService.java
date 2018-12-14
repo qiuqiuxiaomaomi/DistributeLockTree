@@ -2,6 +2,7 @@ package com.bonaparte.service;
 
 import com.bonaparte.dao.mapper.CreditLockMapper;
 import com.bonaparte.entity.CreditLock;
+import lombok.Data;
 import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,20 +20,17 @@ public class MySqlLockService {
     @Autowired
     private CreditLockMapper creditLockMapper;
 
-    @Transactional
-    public void getMysqlLock(){
-        String prefix = "center_lock_";
-        CRC32 crc32 = new CRC32();
-        Long hash = crc32.getValue();
-        Integer len = hash.toString().length();
-        String slot = hash.toString().substring(len - 1);
-        String centerLockKey = prefix + slot;
-        creditLockMapper.queryForupdate(centerLockKey);
+    public void getMysqlLock(Integer id){
         CreditLock creditLock = new CreditLock();
-        creditLock.setCount(1);
+        creditLock.setId(id);
         creditLock.setCreateTime(new Date());
-        creditLock.setDescription("mysql锁");
+        creditLock.setDeadline(new Date());
+        creditLock.setDescription("锁");
+        creditLock.setLockName("锁" + id);
         creditLockMapper.insert(creditLock);
+    }
 
+    public void releaseMysqlLock(Integer id){
+        creditLockMapper.deleteByPrimaryKey(id);
     }
 }
